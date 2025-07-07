@@ -25,6 +25,7 @@ Route::middleware(['auth'])->group(function () {
     })->name('logout');
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('admin', AdminController::class);
+    Route::post('event/{id}/update-status-participant', [EventController::class, 'updateStatusParticipant'])->name('event.update-status-participant');
     Route::resource('event', EventController::class);
     Route::resource('sponsor', SponsorController::class);
     Route::resource('member', MemberController::class);

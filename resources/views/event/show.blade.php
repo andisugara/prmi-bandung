@@ -83,5 +83,113 @@
 
             </div>
         </div>
+        <div class="card mt-4">
+            <div class="card-header d-flex justify-content-between">
+                <h5 class="card-title mb-0 text-md-start text-center pb-md-0 pb-6">Daftar Peserta</h5>
+            </div>
+            <div class="card-body table-responsive">
+                <table class="table table-bordered" id="participantTable">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Transaksi ID</th>
+                            <th>Nama</th>
+                            <th>Email</th>
+                            <th>No. Hp</th>
+                            <th>Qty</th>
+                            <th>Bukti Bayar</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($event->event_transactions as $participant)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $participant->transaction_id }}</td>
+                                <td>{{ $participant->name }}</td>
+                                <td>{{ $participant->email }}</td>
+                                <td>{{ $participant->phone }}</td>
+                                <td>{{ number_format($participant->qty, 0, ',', '.') }}</td>
+                                <td>
+                                    @if ($participant->bukti_pembayaran)
+                                        <a href="{{ asset($participant->bukti_pembayaran) }}" target="_blank"
+                                            class="btn btn-info btn-sm">Lihat Bukti Bayar</a>
+                                    @else
+                                        Tidak ada bukti bayar
+                                    @endif
+                                </td>
+                                <td>
+                                    <span
+                                        class="badge bg-{{ $participant->status == 'success' ? 'success' : 'secondary' }}">
+                                        {{ ucfirst($participant->status) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    @if ($participant->status == 'pending')
+                                        <button class="btn btn-primary btn-sm mt-1"
+                                            onclick="updateStatus('{{ $participant->id }}',  'success')">
+                                            Konfirmasi Pembayaran
+                                        </button>
+                                        <button class="btn btn-danger btn-sm ml-1 mt-1"
+                                            onclick="updateStatus('{{ $participant->id }}',  'failed')">
+                                            Tolak
+                                        </button>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            $('#participantTable').DataTable({});
+        });
+
+        function updateStatus(participantId, status) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, update it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{ url('event') }}/" + participantId + '/update-status-participant',
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            event_transaction_id: participantId,
+                            status: status
+                        },
+                        success: function(response) {
+                            Swal.fire(
+                                'Berhasil!',
+                                response.message,
+                                'success'
+                            ).then(() => {
+                                location.reload();
+                            });
+                        },
+                        error: function(xhr) {
+                            Swal.fire(
+                                'Error!',
+                                xhr.responseJSON.message,
+                                'error'
+                            );
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+@endpush

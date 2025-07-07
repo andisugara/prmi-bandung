@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\EventTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -205,5 +206,17 @@ class EventController extends Controller
     {
         $event->delete();
         return response()->json(['status' => 'success']);
+    }
+
+    function updateStatusParticipant(Request $request, $id)
+    {
+
+        $eventtransaction = EventTransaction::findOrFail($id);
+        $eventtransaction->update([
+            'status' => $request->status,
+        ]);
+
+        Alert::success('Success', 'Event status updated successfully.');
+        return response()->json(['status' => 'success', 'message' => 'Event status updated successfully.']);
     }
 }
