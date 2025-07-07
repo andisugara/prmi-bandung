@@ -35,12 +35,8 @@ class AdminController extends Controller
                 return $user->status == 1 ? '<span class="badge badge-success">Active</span>' : '<span class="badge badge-danger">Inactive</span>';
             })
             ->addColumn('action', function ($user) {
-                $html = '<button class="btn btn-warning btn-sm me-2 btn-edit" data-id="' . $user->id . '" data-name="' . $user->name . '" data-email="' . $user->email . '" data-phone="' . $user->phone . '" data-status="' . $user->status . '" >Edit</button>';
-                $html .= '<form action="' . route('admin.destroy', $user->id) . '" method="POST" style="display:inline;">';
-                $html .= csrf_field();
-                $html .= method_field('DELETE');
-                $html .= '<button type="submit" class="btn btn-danger btn-sm">Delete</button>';
-                $html .= '</form>';
+                $html = '<a href="' . route('admin.edit', $user->id) . '" class="btn btn-warning me-2 btn-sm">Edit</a>';
+                $html .= '<button type="button" class="btn btn-danger btn-sm delete-user" data-id="' . $user->id . '">Delete</button>';
                 return $html;
             })
             ->rawColumns(['phone', 'status', 'action'])
@@ -69,6 +65,7 @@ class AdminController extends Controller
         User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'status' => $request->status ? 1 : 0,
             'password' => bcrypt('password'),
             'phone' => $request->phone,
             'role' => 1,
@@ -90,7 +87,8 @@ class AdminController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $user = User::findOrFail($id);
+        return view('admin.edit', compact('user'));
     }
 
     /**
@@ -98,7 +96,22 @@ class AdminController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $id,
+            'phone' => 'required|string|max:15',
+
+        ]);
+
+        $user = User::findOrFail($id);
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'status' => $request->status ? 1 : 0,
+        ]);
+
+        return redirect()->route('admin.index')->with('success', 'User updated successfully.');
     }
 
     /**
@@ -106,6 +119,9 @@ class AdminController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        return response()->json(['success' => 'User deleted successfully.']);
     }
 }

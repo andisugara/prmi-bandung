@@ -79,6 +79,47 @@
                 });
             @endif
 
+            $('.table').on('click', '.delete-user', function(e) {
+                e.preventDefault();
+                const id = $(this).data('id');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '/admin/' + id,
+                            type: 'POST',
+                            data: {
+                                _token: '{{ csrf_token() }}',
+                                _method: 'DELETE'
+                            },
+                            success: function(response) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    response.message,
+                                    'success'
+                                ).then(() => {
+                                    $('.table').DataTable().ajax.reload();
+                                });
+                            },
+                            error: function(xhr) {
+                                Swal.fire(
+                                    'Error!',
+                                    xhr.responseJSON.message,
+                                    'error'
+                                );
+                            }
+                        });
+                    }
+                });
+            });
+
         });
     </script>
 @endpush

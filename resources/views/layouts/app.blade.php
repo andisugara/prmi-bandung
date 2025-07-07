@@ -40,6 +40,7 @@
 
         <!-- Core JS -->
         <!-- build:js assets/vendor/js/theme.js -->
+        @include('sweetalert::alert')
 
         <script src="{{ asset('/') }}assets/vendor/libs/jquery/jquery.js"></script>
 
@@ -72,7 +73,24 @@
         <!-- Main JS -->
 
         <script src="{{ asset('/') }}assets/js/main.js"></script>
+
+        <script src="{{ asset('/') }}/assets/vendor/libs/cleave-zen/cleave-zen.js"></script>
+        {{-- tinymce --}}
+        <script src="{{ asset('/') }}assets/vendor/libs/tinymce/tinymce.min.js"></script>
         @stack('scripts')
+        <script>
+            const numeralMasks = document.querySelectorAll('.numeral-mask');
+            numeralMasks.forEach(mask => {
+                mask.addEventListener('input', event => {
+                    mask.value = formatNumeral(event.target.value, {
+                        prefix: 'Rp ',
+                        thousandsSeparator: '.',
+                        decimalSeparator: ',',
+                        decimalDigits: 0,
+                    });
+                });
+            });
+        </script>
 
         <!-- Page JS -->
     </body>

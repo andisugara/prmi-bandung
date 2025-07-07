@@ -3,35 +3,38 @@
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="card">
             <div class="card-header">
-                <h5 class="card-title">Tambah Admin</h5>
+                <h5 class="card-title">Edit Admin</h5>
             </div>
             <div class="card-body">
                 @include('layouts.alert.success')
                 @include('layouts.alert.error')
-                <form id="modalUserForm" class="row g-6" action="{{ route('admin.store') }}" method="POST">
+                <form id="modalUserForm" class="row g-6" action="{{ route('admin.update', $user->id) }}" method="POST">
                     @csrf
+                    @method('PUT')
                     <div class="col-12 col-md-6">
                         <label class="form-label" for="modalmodalUserFirstName">First Name</label>
                         <input type="text" id="modalmodalUserFirstName" name="name" class="form-control"
-                            placeholder="John" value="" />
+                            placeholder="John" value="{{ $user->name }}" />
                     </div>
                     <div class="col-12 col-md-6">
                         <label class="form-label" for="modalmodalUserEmail">Email</label>
                         <input type="text" id="modalmodalUserEmail" name="email" class="form-control"
-                            placeholder="example@domain.com" value="" />
+                            placeholder="example@domain.com" value="{{ $user->email }}" />
                     </div>
                     <div class="col-12 col-md-6">
                         <label class="form-label" for="modalmodalUserPhone">Phone Number</label>
                         <div class="input-group">
                             <span class="input-group-text">ID (+62)</span>
                             <input type="text" id="modalmodalUserPhone" name="phone"
-                                class="form-control phone-number-mask" placeholder="82240356763" value="" />
+                                class="form-control phone-number-mask" placeholder="82240356763"
+                                value="{{ $user->phone }}" />
                         </div>
                     </div>
                     <div class="col-12 col-md-6 d-flex flex-column">
                         <label class="form-label" for="modalmodalUserStatus">Status</label>
                         <label class="switch switch-square">
-                            <input type="checkbox" class="switch-input" name="status" id="modalmodalUserStatus" />
+                            <input type="checkbox" class="switch-input" name="status" id="modalmodalUserStatus"
+                                value="1" @if ($user->status == 1) checked @endif />
                             <span class="switch-toggle-slider">
                                 <span class="switch-on"></span>
                                 <span class="switch-off"></span>

@@ -22,7 +22,8 @@ class User extends Authenticatable
         'email',
         'password',
         'phone',
-        'role'
+        'role',
+        'status',
     ];
 
     /**
@@ -46,5 +47,13 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Get the member associated with the user.
+     */
+    public function userMember()
+    {
+        return $this->hasOne(UserMember::class, 'no_member', 'no_member');
     }
 }

@@ -40,7 +40,7 @@
                       </li>
 
                       <li>
-                          <a class="dropdown-item" href="javascript:void(0);">
+                          <a class="dropdown-item" href="{{ route('logout') }}">
                               <i class="icon-base ti tabler-power icon-md me-3"></i><span>Log
                                   Out</span>
                           </a>
